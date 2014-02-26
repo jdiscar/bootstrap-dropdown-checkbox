@@ -67,12 +67,11 @@
       this.sortOptions = options.sortOptions
       this.hideHeader = options.hideHeader || options.hideHeader === undefined ? true : false
       this.templateButton = options.templateButton
-      this.showNbSelected = options.showNbSelected || false;
+      this.multipleChecks = options.multipleChecks || false
+      this.showNbSelected = options.showNbSelected || false
 
       this._query = options.query || this._query;
       this._queryMethod = options.httpMethod || "GET";
-      this._queryParse = options.queryParse || this._queryParse;
-      this._queryError = options.queryError || function() {};
       this._queryUrl = options.queryUrl;
     }
 
@@ -138,8 +137,6 @@
       this.onClickCheckbox(event)
       this._showNbSelected()
     }, this))
-
-
 
     this._reset(this.elements)
     this._showNbSelected()
@@ -220,16 +217,28 @@
     _setCheckbox: function(isChecked, id) {
       for(var i = 0 ; i < this.elements.length ; i++) {
         if (id == this.elements[i].id) {
+          if( !this.multipleChecks && this.elements[i].isChecked ) {            
+            this.$parent.find("ul li input[data-id="+this.elements[i].id+"]").prop("checked", true)
+            if( this.elements[i].onToggle !== undefined )
+              this.elements[i].onToggle(true, false, this.elements[i])
+            continue
+          }
           this.elements[i].isChecked = isChecked
-          break
+          if( this.elements[i].onToggle !== undefined )
+            this.elements[i].onToggle(isChecked, true, this.elements[i])
+        } else {
+          if( !this.multipleChecks ) {
+            this.elements[i].isChecked = false
+            this.$parent.find("ul li input[data-id="+this.elements[i].id+"]").prop("checked", false)
+          }
         }
       }
     },
 
     _refreshCheckboxAll: function() {
       var $elements = this.$element.parents(".dropdown-checkbox").find("ul li input[type=checkbox]")
-        , willChecked
-      $elements.each(function() { willChecked = willChecked || $(this).prop("checked") })
+        , willChecked = false
+      $elements.each(function() { willChecked = willChecked || $(this).prop("checked"); })
       this.$element.parents(".dropdown-checkbox").find(".checkbox-all").prop("checked", willChecked)
     },
 
@@ -243,13 +252,14 @@
         , label = item.label
         , isChecked = item.isChecked
         , uuid = new Date().getTime() * Math.random()
-
+        
       this.$list.append(templateOption)
       var $last = this.$list.find("li").last()
       $last.data("id", id)
 
       var $checkbox = $last.find("input")
       $checkbox.attr("id", uuid)
+      $checkbox.attr("data-id", id)
       if (isChecked) $checkbox.attr("checked", "checked")
 
       var $label = $last.find("label")
@@ -327,7 +337,7 @@
       this._refreshCheckboxAll()
       this.$parent.trigger("checked", $(event.target).prop("checked"))
       $(event.target).prop("checked") ? this.$parent.trigger("check:checkbox") : this.$parent.trigger("uncheck:checkbox")
-
+      
       // Notify changes
       this.hasChanges = true
     },
