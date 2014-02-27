@@ -87,7 +87,8 @@ SOFTWARE.
       this.sortOptions = options.sortOptions;
       this.hideHeader = options.hideHeader || options.hideHeader === undefined ? true : false;
       this.templateButton = options.templateButton;
-      this.showNbSelected = options.showNbSelected || false;
+      this.multipleChecks = options.multipleChecks || true
+      this.showNbSelected = options.showNbSelected || false
 
       this._query = options.query || this._query;
       this._queryMethod = options.httpMethod || 'GET';
@@ -240,8 +241,20 @@ SOFTWARE.
     _setCheckbox: function(isChecked, id) {
       for (var i = 0; i < this.elements.length; i++) {
         if (id == this.elements[i].id) {
-          this.elements[i].isChecked = isChecked;
-          break;
+          if( !this.multipleChecks && this.elements[i].isChecked ) {            
+            this.$parent.find("ul li input[data-id="+this.elements[i].id+"]").prop("checked", true)
+            if( this.elements[i].onToggle !== undefined )
+              this.elements[i].onToggle(true, false, this.elements[i])
+            continue
+          }
+          this.elements[i].isChecked = isChecked
+          if( this.elements[i].onToggle !== undefined )
+            this.elements[i].onToggle(isChecked, true, this.elements[i])
+        } else {
+          if( !this.multipleChecks ) {
+            this.elements[i].isChecked = false
+            this.$parent.find("ul li input[data-id="+this.elements[i].id+"]").prop("checked", false)
+          }
         }
       }
     },
@@ -265,7 +278,7 @@ SOFTWARE.
           label = item.label,
           isChecked = item.isChecked,
           uuid = new Date().getTime() * Math.random();
-
+        
       var node = this.listItemPrototype.cloneNode(true);
       var container = node.firstChild;
 
@@ -370,7 +383,7 @@ SOFTWARE.
       this._refreshCheckboxAll();
       this.$parent.trigger('checked', $(event.target).prop('checked'));
       $(event.target).prop('checked') ? this.$parent.trigger('check:checkbox') : this.$parent.trigger('uncheck:checkbox');
-
+      
       // Notify changes
       this.hasChanges = true;
     },
