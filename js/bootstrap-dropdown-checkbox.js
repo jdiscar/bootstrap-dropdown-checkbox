@@ -87,7 +87,7 @@ SOFTWARE.
       this.sortOptions = options.sortOptions;
       this.hideHeader = options.hideHeader || options.hideHeader === undefined ? true : false;
       this.templateButton = options.templateButton;
-      this.multipleChecks = options.multipleChecks || true
+      this.multipleChecks = options.multipleChecks || options.multipleChecks === undefined ? true : false;
       this.showNbSelected = options.showNbSelected || false
 
       this._query = options.query || this._query;
@@ -283,6 +283,7 @@ SOFTWARE.
       var container = node.firstChild;
 
       $(node).data('id', id);
+      container.firstChild.setAttribute('data-id', id);
       container.firstChild.id = uuid;
       container.firstChild.checked = isChecked;
       container.lastChild.textContent = label;
