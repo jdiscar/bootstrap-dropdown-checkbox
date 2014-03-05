@@ -265,3 +265,24 @@ test('uncheck:checkbox and "checked" is triggered when a single checkbox is unch
   widget.$element.click();
   widget.$list.find('li input[type=checkbox]').last().click();
 });
+
+test('If multipleChecks is false, only one checkbox remains checked on click', function(){
+  var initialData = list(10, true);
+  var widget = setup({ data: initialData, multipleChecks: false });
+
+  widget.$element.click();
+  widget.$list.find('li input[type=checkbox]').last().click();
+  equal(widget.checked().length, 1, 'Items is the right length');
+});
+
+test('onToggle is called', function(){
+  var callback = function(isChecked,wasChecked,obj) {
+    equal(isChecked, true, 'Checked event handler was called with true');
+    equal(wasChecked, false, 'Was checked event handler was called with false');
+  }
+  var initialData = list(10, false, onToggle: callback);
+  var widget = setup({ data: initialData });
+
+  widget.$element.click();
+  widget.$list.find('li input[type=checkbox]').last().click();
+});
