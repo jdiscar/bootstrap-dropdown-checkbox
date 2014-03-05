@@ -17,6 +17,7 @@
       <a class="brand" href="#">Bootstrap Dropdown Checkbox</a>
       <ul class="nav">
         <li class="myDropdownCheckboxBasic dropdown-checkbox dropdown open"></li>
+        <li class="myDropdownCheckboxToggle dropdown-checkbox dropdown"></li>
         <li><a href="#">Link</a></li>
         <li><a href="#">Link</a></li>
       </ul>
@@ -41,7 +42,7 @@
     { id: "11", label: "yellow", isChecked: true },
     { id: "12", label: "Gooooooooooogle", isChecked: true },
     { id: "13", label: "NO WAY!", isChecked: false },
-    { id: "14", label: "2 times?", isChecked: true }
+    { id: "14", label: "Alert On Toggle", isChecked: true, onToggle: function(isChecked,wasChanged,obj) { alert('Alert Clicked'); } }
   ];
 
   $('.myDropdownCheckboxBasic').dropdownCheckbox({
@@ -50,12 +51,22 @@
     title: "My Dropdown Checkbox",
     hideHeader: false,
     showNbSelected: true,
+    multipleChecks: true,
     templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Accounts <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
   });
-
+  
   $('.myDropdownCheckboxBasic').dropdownCheckbox("append",
     { id: "15", label: "added by itself", isChecked: true });
-
+  
+  $('.myDropdownCheckboxToggle').dropdownCheckbox({
+    data: tab,
+    autosearch: false,
+    title: "My Dropdown Checkbox",
+    hideHeader: true,
+    showNbSelected: true,
+    multipleChecks: false,
+    templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">One Checkmark <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
+  });
 
 </script>
 </html>
